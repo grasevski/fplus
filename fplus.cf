@@ -1,0 +1,132 @@
+comment "//" ;
+comment "/*" "*/" ;
+
+Modu. Module ::= "use" [Ident] ";" "dat" "{" [Fn] "}" "ext" "{" [Fn] "}" [Fn] ;
+separator Ident "" ;
+
+IdNa. Name ::= Ident ;
+QuNa. Name ::= Ident "." Ident ;
+InNa. Name ::= "(" QualifiedInfix ")" ;
+
+UnIn. QualifiedInfix ::= Infix ;
+QuIn. QualifiedInfix ::= Ident "." Infix ;
+
+Func. Fn ::= Exp "{" Exp "}" ;
+FnPu. Fn ::= "pub" Fn ;
+internal FnTy. Fn ::= Fn2 "::" "(" Fn ")" ;
+separator Fn "" ;
+coercions Fn 2 ;
+
+token Infix ([".:-^*+=<>&%$!#%|/\\"]+) ;
+
+Eassign.    Exp   ::= Exp14 Assignment_op Exp;
+Econdition. Exp2  ::= Exp3 "?" Exp ":" Exp2;
+Einfix.     Exp2  ::= Exp3 QualifiedInfix Exp2;
+Efakeinfix. Exp2  ::= Exp3 "`" Name "`" Exp2;
+Elor.       Exp3  ::= Exp3 "||" Exp4;
+Eland.      Exp4  ::= Exp4 "&&" Exp5;
+Ebitor.     Exp5  ::= Exp5 "|" Exp6;
+Ebitexor.   Exp6  ::= Exp6 "^" Exp7;
+Ebitand.    Exp7  ::= Exp7 "&" Exp8;
+Eeq.        Exp8  ::= Exp8 "==" Exp9;
+Eneq.       Exp8  ::= Exp8 "!=" Exp9;
+Elthen.     Exp9  ::= Exp9 "<" Exp10;
+Egrthen.    Exp9  ::= Exp9 ">" Exp10;
+Ele.        Exp9  ::= Exp9 "<=" Exp10;
+Ege.        Exp9  ::= Exp9 ">=" Exp10;
+Eleft.      Exp10 ::= Exp10 "<<" Exp11;
+Eright.     Exp10 ::= Exp10 ">>" Exp11;
+Eplus.      Exp11 ::= Exp11 "+" Exp12;
+Eminus.     Exp11 ::= Exp11 "-" Exp12;
+Etimes.     Exp12 ::= Exp12 "*" Exp13;
+Ediv.       Exp12 ::= Exp12 "/" Exp13;
+Emod.       Exp12 ::= Exp12 "%" Exp13;
+Epreop.     Exp14 ::= Unary_operator Exp13;
+Epreinc.    Exp14 ::= "++" Exp14;
+Epredec.    Exp14 ::= "--" Exp14;
+Epostinc.   Exp15 ::= Exp15 "++";
+Epostdec.   Exp15 ::= Exp15 "--";
+Earray.     Exp15 ::= Exp15 "[" Exp "]" ;
+Efunk.      Exp15 ::= Exp15 "(" [Exp] ")" ;
+Ecase.      Exp15 ::= "case" Exp15 "{" [Fn] "}" ;
+Elist.      Exp15 ::= "[" [Exp] "]" ;
+Emap.       Exp15 ::= "{" [Entry] "}" ;
+Evar.       Exp16 ::= Name ;
+Econst.     Exp16 ::= Constant ;
+Estring.    Exp16 ::= String ;
+separator Exp "," ;
+coercions Exp 16 ;
+
+Entr. Entry ::= Exp15 ":" Exp ;
+separator Entry "," ;
+
+Address.     Unary_operator ::= "&" ;
+Indirection. Unary_operator ::= "*" ;
+Plus.        Unary_operator ::= "+" ;
+Negative.    Unary_operator ::= "-" ;
+Complement.  Unary_operator ::= "~" ;
+Logicalneg.  Unary_operator ::= "!" ;
+
+Assign.       Assignment_op ::= "=" ;
+AssignMul.    Assignment_op ::= "*=" ;
+AssignDiv.    Assignment_op ::= "/=" ;
+AssignMod.    Assignment_op ::= "%=" ;
+AssignAdd.    Assignment_op ::= "+=" ;
+AssignSub.    Assignment_op ::= "-=" ;
+AssignLeft.   Assignment_op ::= "<<=" ;
+AssignRight.  Assignment_op ::= ">>=" ;
+AssignAnd.    Assignment_op ::= "&=" ;
+AssignXor.    Assignment_op ::= "^=" ;
+AssignOr.     Assignment_op ::= "|=" ;
+
+Efloat.        Constant ::= Double;
+Echar.         Constant ::= Char;
+Eunsigned.     Constant ::= Unsigned;
+Elong.         Constant ::= Long;
+Eunsignlong.   Constant ::= UnsignedLong;
+Ehexadec.      Constant ::= Hexadecimal;
+Ehexaunsign.   Constant ::= HexUnsigned;
+Ehexalong.     Constant ::= HexLong;
+Ehexaunslong.  Constant ::= HexUnsLong;
+Eoctal.        Constant ::= Octal;
+Eoctalunsign.  Constant ::= OctalUnsigned;
+Eoctallong.    Constant ::= OctalLong;
+Eoctalunslong. Constant ::= OctalUnsLong;
+Ecdouble.      Constant ::= CDouble;
+Ecfloat.       Constant ::= CFloat;
+Eclongdouble.  Constant ::= CLongDouble;
+Eint.          Constant ::= Integer;
+
+internal Elonger. Constant ::= Integer;
+internal Edouble. Constant ::= Double;
+
+token Unsigned ["123456789"] digit * ('u'|'U');
+
+token Long ["123456789"] digit * ('l'|'L');
+
+token UnsignedLong ["123456789"] digit * (('u''l')|('U''L'));
+
+token Hexadecimal '0' ('x'|'X') (digit | ["abcdef"] | ["ABCDEF"])+;
+
+token HexUnsigned '0' ('x'|'X') (digit | ["abcdef"] | ["ABCDEF"])+ ('u'|'U');
+
+token HexLong '0' ('x'|'X') (digit | ["abcdef"] | ["ABCDEF"])+ ('l'|'L');
+
+token HexUnsLong '0' ('x'|'X') (digit | ["abcdef"] | ["ABCDEF"])+ (('u''l')|('U''L'));
+
+token Octal '0'["01234567"]*;
+
+token OctalUnsigned '0'["01234567"]*('u'|'U');
+
+token OctalLong '0'["01234567"]* ('l'|'L');
+
+token OctalUnsLong '0'["01234567"]* (('u''l')|('U''L'));
+
+token CDouble (((digit+ '.')|('.' digit+))(('e'|'E') ('-')? digit+)?)|
+              (digit+ ('e'|'E') ('-')? digit+)|(digit+ '.' digit+ 'E' ('-')? digit+);
+
+token CFloat (((digit+ '.' digit+)|(digit+ '.')|('.' digit+))(('e'|'E')('-')? digit+)?
+                               ('f'|'F'))|((digit+ ('e'|'E')('-')? digit+)('f'|'F'));
+
+token CLongDouble (((digit+ '.' digit+)|(digit+ '.')|('.' digit+))(('e'|'E')('-')?
+                   digit+)?('l'|'L'))|((digit+ ('e'|'E')('-')? digit+)('l'|'L'));
